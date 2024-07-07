@@ -18,6 +18,14 @@ const App = () => {
     )  
   }, [])
 
+  useEffect(() => {
+    const loggedUser = window.localStorage.getItem('localUser')
+    if(loggedUser) {
+      const user = JSON.parse(loggedUser)
+      setUser(user)
+    }
+  }, [])
+
   const handleUsernameChange = (event) => {
     const changedUsername = event.target.value
     setUsername(changedUsername)
@@ -34,6 +42,7 @@ const App = () => {
     try {
       const user = await loginService.login({username, password})
       setUser(user)
+      window.localStorage.setItem('localUser', JSON.stringify(user))
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -43,13 +52,19 @@ const App = () => {
       }, 5000)
     }
   }
+
+  const handleLogout = (event) => {
+    window.localStorage.removeItem('localUser')
+    setUser(null)
+  }
+  
   return (
     <div>
       <h1>Blogs list</h1>
       <Notification message={errorMessage}/>
       {user === null ?
        <Login handleLogin={handleLogin} handlePasswordChange={handlePasswordChange} handleUsernameChange={handleUsernameChange}/> :
-       <Blogs blogs={blogs} user={user}/>}
+       <Blogs blogs={blogs} user={user} handleLogout={handleLogout}/>}
     </div>
   )
 
