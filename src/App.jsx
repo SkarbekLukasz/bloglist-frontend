@@ -11,6 +11,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -36,11 +39,45 @@ const App = () => {
     setPassword(changedPassword)
   }
 
+  const handleAuthorChange = (event) => {
+    const changedAuthor = event.target.value
+    setAuthor(changedAuthor)
+  }
+
+  const handleTitleChange = (event) => {
+    const changedTitle = event.target.value
+    setTitle(changedTitle)
+  }
+
+  const handleUrlChange = (event) => {
+    const changedUrl = event.target.value
+    setUrl(changedUrl)
+  }
+
+  const createBlog = async (event) => {
+    event.preventDefault()
+    try {
+      const blog = {
+        title: title,
+        author: author,
+        url: url
+      }
+      const response = await blogService.saveNewBlog(blog)
+      setBlogs(blogs.concat(response))
+      setAuthor('')
+      setTitle('')
+      setUrl('')
+    } catch (exception) {
+      console.log(exception.message)
+    }
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault()
 
     try {
       const user = await loginService.login({username, password})
+      blogService.setToken(user.token)
       setUser(user)
       window.localStorage.setItem('localUser', JSON.stringify(user))
       setUsername('')
@@ -64,7 +101,7 @@ const App = () => {
       <Notification message={errorMessage}/>
       {user === null ?
        <Login handleLogin={handleLogin} handlePasswordChange={handlePasswordChange} handleUsernameChange={handleUsernameChange}/> :
-       <Blogs blogs={blogs} user={user} handleLogout={handleLogout}/>}
+       <Blogs createBlog={createBlog} blogs={blogs} user={user} handleLogout={handleLogout} handleAuthorChange={handleAuthorChange} handleTitleChange={handleTitleChange} handleUrlChange={handleUrlChange}/>}
     </div>
   )
 
