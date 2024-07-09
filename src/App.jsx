@@ -10,7 +10,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [message, setMessage] = useState(null)
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -67,8 +67,16 @@ const App = () => {
       setAuthor('')
       setTitle('')
       setUrl('')
+      setMessage(`Successfully added blog ${response.title} by ${response.author}`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     } catch (exception) {
       console.log(exception.message)
+      setMessage('Failed to create blog')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     }
   }
 
@@ -83,9 +91,9 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setMessage('Wrong credentials')
       setTimeout(() => {
-        setErrorMessage(null)
+        setMessage(null)
       }, 5000)
     }
   }
@@ -93,12 +101,16 @@ const App = () => {
   const handleLogout = (event) => {
     window.localStorage.removeItem('localUser')
     setUser(null)
+    setMessage('Logged out')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
   }
   
   return (
     <div>
       <h1>Blogs list</h1>
-      <Notification message={errorMessage}/>
+      <Notification message={message}/>
       {user === null ?
        <Login handleLogin={handleLogin} handlePasswordChange={handlePasswordChange} handleUsernameChange={handleUsernameChange}/> :
        <Blogs createBlog={createBlog} blogs={blogs} user={user} handleLogout={handleLogout} handleAuthorChange={handleAuthorChange} handleTitleChange={handleTitleChange} handleUrlChange={handleUrlChange}/>}
