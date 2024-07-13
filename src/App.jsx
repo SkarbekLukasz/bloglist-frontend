@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blogs from './components/Blogs'
 import blogService from './services/blogs'
 import Login from './components/Login'
@@ -14,6 +14,7 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const newBlogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -68,6 +69,7 @@ const App = () => {
       setTitle('')
       setUrl('')
       setMessage(`Successfully added blog ${response.title} by ${response.author}`)
+      newBlogFormRef.current.toggleVisibility()
       setTimeout(() => {
         setMessage(null)
       }, 5000)
@@ -113,7 +115,16 @@ const App = () => {
       <Notification message={message}/>
       {user === null ?
        <Login handleLogin={handleLogin} handlePasswordChange={handlePasswordChange} handleUsernameChange={handleUsernameChange}/> :
-       <Blogs createBlog={createBlog} blogs={blogs} user={user} handleLogout={handleLogout} handleAuthorChange={handleAuthorChange} handleTitleChange={handleTitleChange} handleUrlChange={handleUrlChange}/>}
+       <Blogs 
+        createBlog={createBlog}
+        blogs={blogs}
+        user={user}
+        handleLogout={handleLogout}
+        handleAuthorChange={handleAuthorChange}
+        handleTitleChange={handleTitleChange}
+        handleUrlChange={handleUrlChange}
+        newBlogFormRef={newBlogFormRef}
+        />}
     </div>
   )
 
