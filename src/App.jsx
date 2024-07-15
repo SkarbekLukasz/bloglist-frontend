@@ -14,7 +14,7 @@ const App = () => {
   const newBlogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs => setBlogs(blogs))
+    blogService.getAll().then(blogs => setBlogs(sortBlogsByLikes(blogs)))
   }, [])
 
   useEffect(() => {
@@ -29,6 +29,10 @@ const App = () => {
     setUsername(event.target.value)
   }
 
+  const sortBlogsByLikes = (blogs) => {
+    return blogs.toSorted((a, b) => a.likes + b.likes)
+  }
+
   const handlePasswordChange = (event) => {
     setPassword(event.target.value)
   }
@@ -38,7 +42,7 @@ const App = () => {
     try {
       const blog = { title, author, url }
       const response = await blogService.saveNewBlog(blog)
-      setBlogs(blogs.concat(response))
+      setBlogs(sortBlogsByLikes(blogs.concat(response)))
       setMessage(`Successfully added blog ${response.title} by ${response.author}`)
       newBlogFormRef.current.toggleVisibility()
       setTimeout(() => {
@@ -56,7 +60,7 @@ const App = () => {
     try {
       const response = await blogService.updateLikesCount(updatedBlog)
       const updatedBlogs = blogs.map(blog => blog.id === response.data.id ? { ...blog, likes: response.data.likes } : blog)
-      setBlogs(updatedBlogs)
+      setBlogs(sortBlogsByLikes(updatedBlogs))
       setMessage(`You liked blog ${updatedBlog.title} by ${updatedBlog.author}`)
       setTimeout(() => {
         setMessage(null)
