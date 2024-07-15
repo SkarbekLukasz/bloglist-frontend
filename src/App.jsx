@@ -73,6 +73,23 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async (blogToDelete) => {
+    try {
+      await blogService.deleteBlog(blogToDelete.id)
+      const updatedBlogs = blogs.filter(blog => blog.id !== blogToDelete.id)
+      setBlogs(sortBlogsByLikes(updatedBlogs))
+      setMessage(`Successfully deleted blog ${blogToDelete.title} by ${blogToDelete.author}`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    } catch(exception) {
+      setMessage('Failed to delete blog')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    }
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault()
 
@@ -113,6 +130,7 @@ const App = () => {
           handleLogout={handleLogout}
           newBlogFormRef={newBlogFormRef}
           updateLikesCount={updateLikesCount}
+          deleteBlog={deleteBlog}
         />}
     </div>
   )

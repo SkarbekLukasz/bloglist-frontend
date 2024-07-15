@@ -2,7 +2,7 @@ import Blog from './Blog'
 import NewBlog from './NewBlog'
 import Togglable from './Togglable'
 
-const Blogs = ({ blogs, user, handleLogout, createBlog, newBlogFormRef, updateLikesCount }) => {
+const Blogs = ({ blogs, user, handleLogout, createBlog, newBlogFormRef, updateLikesCount, deleteBlog }) => {
   return (
     <div>
       <h2>Blogs</h2>
@@ -13,7 +13,7 @@ const Blogs = ({ blogs, user, handleLogout, createBlog, newBlogFormRef, updateLi
       <br />
       <h3>List of blogs</h3>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updateLikes={updateLikesCount} />
+        <Blog key={blog.id} blog={blog} updateLikes={updateLikesCount} deleteBlog={deleteBlog} />
       )}
     </div>
   )
