@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 const Blog = ({ blog, updateLikes, deleteBlog }) => {
-  const [isVisible, setVisible] = useState(false);
+  const [isVisible, setVisible] = useState(false)
 
   const toggleVisibility = () => {
-    setVisible(!isVisible);
-  };
+    setVisible(!isVisible)
+  }
 
   const addLikes = () => {
-    const updatedBlog = { ...blog, likes: blog.likes + 1 };
-    updateLikes(updatedBlog);
-  };
+    const updatedBlog = { ...blog, likes: blog.likes + 1 }
+    updateLikes(updatedBlog)
+  }
 
   const isUserCreator = () => {
     const user = JSON.parse(window.localStorage.getItem('localUser'))
@@ -30,7 +30,7 @@ const Blog = ({ blog, updateLikes, deleteBlog }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
-  };
+  }
 
   return (
     <div style={styles}>
@@ -50,7 +50,7 @@ const Blog = ({ blog, updateLikes, deleteBlog }) => {
         <button onClick={deleteThis}>remove</button>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Blog;
+export default Blog
