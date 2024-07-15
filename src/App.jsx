@@ -14,37 +14,29 @@ const App = () => {
   const newBlogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+    blogService.getAll().then(blogs => setBlogs(blogs))
   }, [])
 
   useEffect(() => {
     const loggedUser = window.localStorage.getItem('localUser')
-    if(loggedUser) {
+    if (loggedUser) {
       const user = JSON.parse(loggedUser)
       setUser(user)
     }
   }, [])
 
   const handleUsernameChange = (event) => {
-    const changedUsername = event.target.value
-    setUsername(changedUsername)
+    setUsername(event.target.value)
   }
 
   const handlePasswordChange = (event) => {
-    const changedPassword = event.target.value
-    setPassword(changedPassword)
+    setPassword(event.target.value)
   }
 
   const createBlog = async (newBlog) => {
-    const {title, author, url} = newBlog
+    const { title, author, url } = newBlog
     try {
-      const blog = {
-        title: title,
-        author: author,
-        url: url
-      }
+      const blog = { title, author, url }
       const response = await blogService.saveNewBlog(blog)
       setBlogs(blogs.concat(response))
       setMessage(`Successfully added blog ${response.title} by ${response.author}`)
@@ -53,8 +45,24 @@ const App = () => {
         setMessage(null)
       }, 5000)
     } catch (exception) {
-      console.log(exception.message)
       setMessage('Failed to create blog')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    }
+  }
+
+  const updateLikesCount = async (updatedBlog) => {
+    try {
+      const response = await blogService.updateLikesCount(updatedBlog)
+      const updatedBlogs = blogs.map(blog => blog.id === response.data.id ? { ...blog, likes: response.data.likes } : blog)
+      setBlogs(updatedBlogs)
+      setMessage(`You liked blog ${updatedBlog.title} by ${updatedBlog.author}`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    } catch (exception) {
+      setMessage('Failed to update like count')
       setTimeout(() => {
         setMessage(null)
       }, 5000)
@@ -65,7 +73,7 @@ const App = () => {
     event.preventDefault()
 
     try {
-      const user = await loginService.login({username, password})
+      const user = await loginService.login({ username, password })
       blogService.setToken(user.token)
       setUser(user)
       window.localStorage.setItem('localUser', JSON.stringify(user))
@@ -79,31 +87,31 @@ const App = () => {
     }
   }
 
-  const handleLogout = (event) => {
+  const handleLogout = () => {
     window.localStorage.removeItem('localUser')
     setUser(null)
     setMessage('Logged out')
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
   }
-  
+
   return (
     <div>
       <h1>Blogs list</h1>
-      <Notification message={message}/>
+      <Notification message={message} />
       {user === null ?
-       <Login handleLogin={handleLogin} handlePasswordChange={handlePasswordChange} handleUsernameChange={handleUsernameChange}/> :
-       <Blogs 
-        createBlog={createBlog}
-        blogs={blogs}
-        user={user}
-        handleLogout={handleLogout}
-        newBlogFormRef={newBlogFormRef}
+        <Login handleLogin={handleLogin} handlePasswordChange={handlePasswordChange} handleUsernameChange={handleUsernameChange} /> :
+        <Blogs
+          createBlog={createBlog}
+          blogs={blogs}
+          user={user}
+          handleLogout={handleLogout}
+          newBlogFormRef={newBlogFormRef}
+          updateLikesCount={updateLikesCount}
         />}
     </div>
   )
-
 }
 
 export default App
