@@ -11,9 +11,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const newBlogFormRef = useRef()
 
   useEffect(() => {
@@ -40,23 +37,8 @@ const App = () => {
     setPassword(changedPassword)
   }
 
-  const handleAuthorChange = (event) => {
-    const changedAuthor = event.target.value
-    setAuthor(changedAuthor)
-  }
-
-  const handleTitleChange = (event) => {
-    const changedTitle = event.target.value
-    setTitle(changedTitle)
-  }
-
-  const handleUrlChange = (event) => {
-    const changedUrl = event.target.value
-    setUrl(changedUrl)
-  }
-
-  const createBlog = async (event) => {
-    event.preventDefault()
+  const createBlog = async (newBlog) => {
+    const {title, author, url} = newBlog
     try {
       const blog = {
         title: title,
@@ -65,9 +47,6 @@ const App = () => {
       }
       const response = await blogService.saveNewBlog(blog)
       setBlogs(blogs.concat(response))
-      setAuthor('')
-      setTitle('')
-      setUrl('')
       setMessage(`Successfully added blog ${response.title} by ${response.author}`)
       newBlogFormRef.current.toggleVisibility()
       setTimeout(() => {
@@ -120,9 +99,6 @@ const App = () => {
         blogs={blogs}
         user={user}
         handleLogout={handleLogout}
-        handleAuthorChange={handleAuthorChange}
-        handleTitleChange={handleTitleChange}
-        handleUrlChange={handleUrlChange}
         newBlogFormRef={newBlogFormRef}
         />}
     </div>
