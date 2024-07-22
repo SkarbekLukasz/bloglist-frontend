@@ -1,19 +1,42 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import Blog from '../components/Blog'
 import { expect } from 'vitest'
 
 test('renders content', () => {
-    const blog = {
-        title: 'Some title',
-        author: 'Some author',
-        likes: 1
+  const blog = {
+    title: 'Some title',
+    author: 'Some author',
+    likes: 1,
+    url: 'http://localhost:3003'
+  }
+
+  const { container } = render(<Blog blog={blog} />)
+
+  const element = container.querySelector('.blog')
+  expect(element).toHaveTextContent('Some title Some author')
+
+  const details = container.querySelector('.blogDetails')
+  expect(details).toBeNull
+})
+
+test('renders blog url and likes', async () => {
+  const blog = {
+    title: 'Some title',
+    author: 'Some author',
+    likes: 1,
+    url: 'http://localhost:3003',
+    user: {
+      name: 'Pabloo',
     }
+  }
 
-    const { container } = render(<Blog blog={blog} />)
+  render(<Blog blog={blog} />)
 
-    const element = container.querySelector('.blog')
-    expect(element).toHaveTextContent('Some title Some author')
+  const user = userEvent.setup()
+  const button = screen.getByText('view')
+  await user.click(button)
 
-    const details = container.querySelector('.blogDetails')
-    expect(details).toBeNull
+  const details = screen.getByText('http://localhost:3003')
+  expect(details).toBeDefined
 })
