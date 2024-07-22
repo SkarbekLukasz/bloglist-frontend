@@ -40,3 +40,30 @@ test('renders blog url and likes', async () => {
   const details = screen.getByText('http://localhost:3003')
   expect(details).toBeDefined
 })
+
+test('clicking like button 2 times gives 2 likes', async () => {
+  const blog = {
+    title: 'Some title',
+    author: 'Some author',
+    likes: 1,
+    url: 'http://localhost:3003',
+    user: {
+      name: 'Pabloo',
+    }
+  }
+
+  const mockHandler = vi.fn()
+
+  render(<Blog blog={blog} updateLikes={mockHandler}/>)
+  const user = userEvent.setup()
+
+  const viewButton = screen.getByText('view')
+  await user.click(viewButton)
+
+
+  const likeButton = screen.getByText('like')
+  await user.click(likeButton)
+  await user.click(likeButton)
+  expect(mockHandler.mock.calls).toHaveLength(2)
+
+})
