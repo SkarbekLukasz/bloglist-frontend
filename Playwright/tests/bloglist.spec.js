@@ -11,6 +11,13 @@ describe("Blog list app E2E tests", () => {
         password: "salainen",
       },
     });
+    await request.post("http://localhost:5173/api/users", {
+      data: {
+        name: "Paweł Jaszczak",
+        username: "Pabloo",
+        password: "sekret",
+      },
+    });
 
     await page.goto("http://localhost:5173");
   });
@@ -63,6 +70,18 @@ describe("Blog list app E2E tests", () => {
       await page.getByText("remove").click();
 
       await expect(page.getByText("New title New Author")).toBeHidden();
+    });
+
+    test("noncreator can not delete a blog post", async ({ page }) => {
+      await createBlog(page);
+      await page.getByText("logout").click();
+      await loginWith(page, "Pabloo", "sekret");
+
+      await expect(page.getByText("New title New author")).toBeVisible();
+      await page.getByText("view").click();
+      page.on("dialog", (dialog) => dialog.accept());
+      await page.getByText("remove").click();
+      await expect(page.getByText("Failed to delete blog")).toBeVisible();
     });
   });
 });
