@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require("@playwright/test");
-const { loginWith } = require("./helper");
+const { loginWith, createBlog } = require("./helper");
 
 describe("Blog list app E2E tests", () => {
   beforeEach(async ({ page, request }) => {
@@ -46,6 +46,14 @@ describe("Blog list app E2E tests", () => {
       await page.getByText("create").click();
 
       await expect(page.getByText("New title New author")).toBeVisible();
+    });
+
+    test("like the blog post", async ({ page }) => {
+      await createBlog(page);
+      await page.getByText("view").click();
+      await page.getByText("like").click();
+
+      await expect(page.getByText("likes 1 like")).toBeVisible();
     });
   });
 });
