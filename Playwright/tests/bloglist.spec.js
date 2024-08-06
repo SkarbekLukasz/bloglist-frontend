@@ -55,5 +55,14 @@ describe("Blog list app E2E tests", () => {
 
       await expect(page.getByText("likes 1 like")).toBeVisible();
     });
+
+    test("deleting blog post works", async ({ page }) => {
+      await createBlog(page);
+      await page.getByText("view").click();
+      page.on("dialog", (dialog) => dialog.accept());
+      await page.getByText("remove").click();
+
+      await expect(page.getByText("New title New Author")).toBeHidden();
+    });
   });
 });
