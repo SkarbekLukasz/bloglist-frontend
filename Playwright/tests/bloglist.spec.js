@@ -56,7 +56,7 @@ describe("Blog list app E2E tests", () => {
     });
 
     test("like the blog post", async ({ page }) => {
-      await createBlog(page);
+      await createBlog(page, "New title", "New author", "New URL");
       await page.getByText("view").click();
       await page.getByText("like").click();
 
@@ -64,7 +64,7 @@ describe("Blog list app E2E tests", () => {
     });
 
     test("deleting blog post works", async ({ page }) => {
-      await createBlog(page);
+      await createBlog(page, "New title", "New author", "New URL");
       await page.getByText("view").click();
       page.on("dialog", (dialog) => dialog.accept());
       await page.getByText("remove").click();
@@ -73,7 +73,7 @@ describe("Blog list app E2E tests", () => {
     });
 
     test("noncreator can not delete a blog post", async ({ page }) => {
-      await createBlog(page);
+      await createBlog(page, "New title", "New author", "New URL");
       await page.getByText("logout").click();
       await loginWith(page, "Pabloo", "sekret");
 
@@ -82,6 +82,40 @@ describe("Blog list app E2E tests", () => {
       page.on("dialog", (dialog) => dialog.accept());
       await page.getByText("remove").click();
       await expect(page.getByText("Failed to delete blog")).toBeVisible();
+    });
+
+    test("blogs are arranger in the order of likes", async ({
+      page,
+      request,
+    }) => {
+      const blogs = [
+        { title: "Blog #1", author: "Author #1", url: "URL #1", likes: 5 },
+        { title: "Blog #2", author: "Author #2", url: "URL #2", likes: 7 },
+        { title: "Blog #3", author: "Author #3", url: "URL #3", likes: 6 },
+      ];
+
+      for (const blog of blogs) {
+        await createBlog(page, blog.title, blog.author, blog.url);
+        await page.getByText("view").click();
+        const blogElement = await page
+          .locator(`text=${blog.title} ${blog.author}`)
+          .locator("..");
+        const likeButton = blogElement.locator("text=like");
+
+        for (let i = 1; i <= blog.likes; i++) {
+          await likeButton.click();
+        }
+      }
+      const renderedBlogs = await page.locator(".blogDetails").all();
+      const likes = await Promise.all(
+        renderedBlogs.map(async (blog) => {
+          const likesText = await blog.locator("text=likes").textContent();
+          return parseInt(likesText.replace("likes ", ""));
+        })
+      );
+      for (let i = 0; i < likes.length - 1; i++) {
+        expect(likes[i]).toBeGreaterThanOrEqual(likes[i + 1]);
+      }
     });
   });
 });

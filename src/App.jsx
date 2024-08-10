@@ -29,9 +29,9 @@ const App = () => {
     setUsername(event.target.value)
   }
 
-  const sortBlogsByLikes = (blogs) => {
-    return blogs.toSorted((a, b) => a.likes + b.likes)
-  }
+  const sortBlogsByLikes = (blogsToSort) => {
+    return blogsToSort.toSorted((a, b) => b.likes - a.likes);
+  };
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value)
@@ -60,7 +60,8 @@ const App = () => {
     try {
       const response = await blogService.updateLikesCount(updatedBlog)
       const updatedBlogs = blogs.map(blog => blog.id === response.data.id ? { ...blog, likes: response.data.likes } : blog)
-      setBlogs(sortBlogsByLikes(updatedBlogs))
+      const sortedBlogs = sortBlogsByLikes(updatedBlogs)
+      setBlogs(sortedBlogs)
       setMessage(`You liked blog ${updatedBlog.title} by ${updatedBlog.author}`)
       setTimeout(() => {
         setMessage(null)
